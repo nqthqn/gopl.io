@@ -19,15 +19,18 @@ func timeTo(f func()) {
 	fmt.Println(time.Since(t))
 }
 
+// 9586 ns/op	112 B/op	3 allocs/op
 func echo1() {
 	var s, sep string
 	for i := 1; i < len(os.Args); i++ {
-		s += sep + os.Args[i] // Strings are immutable — this creates garbage that is cleaned up when s goes out of scope
+		// Strings are immutable ∴ this is littering
+		s += sep + os.Args[i]
 		sep = " "
 	}
 	fmt.Println(s)
 }
 
+// 3555 ns/op	112 B/op	3 allocs/op
 func echo2() {
 	s, sep := "", ""
 	for _, arg := range os.Args[1:] {
@@ -37,6 +40,14 @@ func echo2() {
 	fmt.Println(s)
 }
 
+// 2895 ns/op	80 B/op		2 allocs/op
 func echo3() {
 	fmt.Println(strings.Join(os.Args[1:], " "))
 }
+
+/*
+op:			single iteration
+ns/op:		how long each op took in nano seconds
+allocs/op:	how many distinct memory allocations occurred per op
+B/op:		how many bytes were allocated per op
+*/
