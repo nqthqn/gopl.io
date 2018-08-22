@@ -8,12 +8,6 @@ import (
 	"os"
 )
 
-// Dup ...
-type Dup struct {
-	names map[string]struct{} // Set of file names the line occures in
-	count int                 // Number of times the line was duplicated
-}
-
 func main() {
 	// Build it
 	counts := make(map[string]Dup)
@@ -26,29 +20,35 @@ func main() {
 		input := bufio.NewScanner(f)
 		for input.Scan() {
 			dup, present := counts[input.Text()]
-			if present {
-				dup.count++
-				dup.names[f.Name()] = struct{}{}
-				counts[input.Text()] = dup
-			} else {
-				d := Dup{
-					names: map[string]struct{}{f.Name(): struct{}{}},
-					count: 1,
+			if !present {
+				dup = Dup{
+					names: make(map[string]struct{}),
 				}
-				counts[input.Text()] = d
 			}
+			dup.count++
+			dup.names[f.Name()] = struct{}{}
+			counts[input.Text()] = dup
 		}
 		f.Close()
 	}
 
 	for line, dup := range counts {
 		if dup.count > 1 {
-			var names []string
-			for name := range dup.names {
-				names = append(names, name)
-			}
-			fmt.Println(dup.count, names, line)
+			fmt.Println(dup.String(), line)
 		}
 	}
+}
 
+// Dup ...
+type Dup struct {
+	names map[string]struct{} // Set of file names the line occures in
+	count int                 // Number of times the line was duplicated
+}
+
+func (d *Dup) String() string {
+	var names []string
+	for name := range d.names {
+		names = append(names, name)
+	}
+	return fmt.Sprintf("%d %v", d.count, names)
 }
