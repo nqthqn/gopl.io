@@ -11,6 +11,7 @@ func main() {
 	timeTo(echo1)
 	timeTo(echo2)
 	timeTo(echo3)
+	timeTo(echo1a)
 }
 
 func timeTo(f func()) {
@@ -30,6 +31,13 @@ func echo1() {
 	fmt.Println(s)
 }
 
+func echo1a() {
+	for i := 1; i < len(os.Args); i++ {
+		fmt.Printf("%s ", os.Args[i])
+	}
+	fmt.Println()
+}
+
 // 3555 ns/op	112 B/op	3 allocs/op
 func echo2() {
 	s, sep := "", ""
@@ -46,7 +54,7 @@ func echo3() {
 }
 
 /*
-op:			single iteration
+op:		single iteration
 ns/op:		how long each op took in nano seconds
 allocs/op:	how many distinct memory allocations occurred per op
 B/op:		how many bytes were allocated per op
